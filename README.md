@@ -2,7 +2,7 @@
 # VTOP UI
 
 Fixes the boring ancient vtop UI (vtop.vit.ac.in.)
-Open PR to make it better.
+Open PR to make it better and do expect bugs.
 
 
 
