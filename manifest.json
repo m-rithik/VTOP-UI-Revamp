@@ -5,8 +5,16 @@
   "description": "Fixes grandpa VTOP.",
   "content_scripts": [
     {
-      "matches": ["https://vtop.vit.ac.in/*"],
-      "js": ["content.js", "pdf-autoopen.js"]
+      "matches": [
+        "https://vtop.vit.ac.in/*"
+      ],
+      "js": [
+        "content.js",
+        "pdf-autoopen.js"
+      ],
+      "css": [
+        "css/navbar.css"
+      ]
     }
   ],
   "background": {
@@ -23,8 +31,17 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["vtop-dock-inject.js", "vtop-loading.js", "spotlight-fix.js", "topbar-fix.js", "darkmode.js", "darkreader.min.js"],
-      "matches": ["https://vtop.vit.ac.in/*"]
+      "resources": [
+        "vtop-dock-inject.js",
+        "vtop-loading.js",
+        "spotlight-fix.js",
+        "topbar-fix.js",
+        "darkmode.js",
+        "darkreader.min.js"
+      ],
+      "matches": [
+        "https://vtop.vit.ac.in/*"
+      ]
     }
   ],
   "icons": {
@@ -33,4 +50,4 @@
     "48": "logo.png",
     "128": "logo.png"
   }
-} 
+}
