@@ -35,5 +35,4 @@ Open PR to make it better and do expect bugs.
 
  - [Dark Mode ](https://github.com/darkreader/darkreader)
  - [VTOP PDF View](https://github.com/theg1239/VTOP-AutoOpen)
- - [VTOP Session Requests](https://github.com/theg1239/VTOP-activity)
  - [For JS](https://chat.com)
