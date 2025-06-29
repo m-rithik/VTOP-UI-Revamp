@@ -25,6 +25,8 @@ Open PR to make it better.
 
 ## Screenshots
 
+- Includes VIBoot extension in the images
+  
 ![App Screenshot](https://github.com/m-rithik/VTOP-UI/blob/main/imgs/img1.png)
 ![App Screenshot](https://github.com/m-rithik/VTOP-UI/blob/main/imgs/img2.png)
 
