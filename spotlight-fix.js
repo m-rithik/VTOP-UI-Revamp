@@ -111,7 +111,9 @@
     const spotlightHeader = leftCol.querySelector('.fs-5.fontcolor1.mt-5.fw-bold') || 
                            leftCol.querySelector('.fs-5.fontcolor1.fw-bold') ||
                            leftCol.querySelector('[class*="spotlight"]') ||
+
                            leftCol.querySelector('h5:contains("Spotlight")');
+                           Array.from(leftCol.querySelectorAll('h5')).find(h => h.textContent.includes("Spotlight"));
     let spotlightRow = null;
     if (spotlightHeader) {
       spotlightRow = spotlightHeader.closest('.row');
@@ -205,6 +207,7 @@
   // Observe dashboard area for dynamic updates
   const observer = new MutationObserver(() => setTimeout(attemptRearrange, 100));
   observer.observe(document.body, { childList: true, subtree: true });
+<<<<<<< HEAD
 
   // Robust injection: retry and observe
   function robustInjectLoop() {
@@ -212,4 +215,6 @@
     setTimeout(robustInjectLoop, 5000); // Reduced spam
   }
   robustInjectLoop();
+=======
+>>>>>>> 6503050 (commiy)
 })(); 
