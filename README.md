@@ -1,7 +1,7 @@
 
 # VTOP UI
 
-Fixes the boring ancient vtop UI vtop.vit.ac.in.
+Fixes the boring ancient vtop UI (vtop.vit.ac.in.)
 Open PR to make it better.
 
 
@@ -17,7 +17,7 @@ Open PR to make it better.
 
 ## Installation
 
-- Download the repo as a zip.
+- Download the repo as a zip/check release.
 - Extract it
 - Go to chrome extensions and turn on developer mode
 - Click load unpacked and select the extracted folder
