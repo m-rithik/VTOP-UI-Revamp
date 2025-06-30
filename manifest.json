@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VTOP UI",
-  "version": "1.0",
+  "version": "1.0.2",
   "description": "Fixes grandpa VTOP.",
   "content_scripts": [
     {
@@ -11,9 +11,6 @@
       "js": [
         "content.js",
         "pdf-autoopen.js"
-      ],
-      "css": [
-        "css/navbar.css"
       ]
     }
   ],
@@ -27,7 +24,8 @@
     "alarms",
     "cookies",
     "scripting",
-    "tabs"
+    "tabs",
+    "storage"
   ],
   "web_accessible_resources": [
     {
@@ -49,5 +47,14 @@
     "32": "logo.png",
     "48": "logo.png",
     "128": "logo.png"
+  },
+  "action": {
+    "default_popup": "popup2.html",
+    "default_icon": {
+      "16": "logo.png",
+      "32": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
   }
 }

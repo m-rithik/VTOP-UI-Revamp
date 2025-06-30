@@ -80,7 +80,6 @@
 
   function setDarkMode(enabled) {
     if (!window.DarkReader) {
-      alert('DarkReader is not available.');
       console.error('[VTOP Enhance] DarkReader is not available in setDarkMode.');
       return;
     }
