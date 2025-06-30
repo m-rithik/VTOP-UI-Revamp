@@ -1,7 +1,7 @@
 
-# VTOP UI
+# VTOP UI Revamp
 
-Fixes the boring ancient vtop UI (vtop.vit.ac.in.)
+Extension for VIT Vellore student portal VTOP (https://vtop.vit.ac.in)
 Open PR to make it better and do expect bugs.
 
 
