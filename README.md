@@ -1,8 +1,8 @@
 
 # VTOP UI Revamp
 
-Extension for VIT Vellore student portal VTOP (https://vtop.vit.ac.in)
-Open PR to make it better and do expect bugs.
+- Extension for VTOP - A VIT Vellore student portal (https://vtop.vit.ac.in)
+- Open PR to make it better and do expect bugs.
 
 
 
