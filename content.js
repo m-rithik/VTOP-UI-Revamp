@@ -1,124 +1,96 @@
 // ==UserScript==
-// @name         VTOP Mac-like Dock Loader
+// @name         VTOP UI Revamp Loader
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Injects the VTOP dock and loading overlay scripts into the page context for full access to VTOP functions.
+// @version      2.0
+// @description  Injects VTOP UI Revamp features (Dock, TopBar, Spotlight, Loading, Tools) based on user settings.
 // ==/UserScript==
 (function () {
-  // --- Feature injection/removal helpers ---
+  // --- Helpers ---
   function injectScript(filename, id) {
     if (id && document.getElementById(id)) return;
-    var script = document.createElement('script');
+    const script = document.createElement('script');
     script.src = chrome.runtime.getURL(filename);
     if (id) script.id = id;
     script.onload = function () { this.remove(); };
     (document.head || document.documentElement).appendChild(script);
   }
-  function removeScript(id) {
-    var script = document.getElementById(id);
-    if (script) script.remove();
-  }
-  function injectCSS() {
+  function injectNavbarStyle() {
     if (document.querySelector('style[data-vtop-enhance-navbar]')) return;
     const style = document.createElement('style');
     style.setAttribute('data-vtop-enhance-navbar', 'true');
     style.textContent = `#vtopHeader {
-        position: fixed !important;
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 98vw !important;
-        max-width: 1800px;
-        z-index: 9999 !important;
-        background: #2c80bc !important;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
-        border-radius: 18px !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
-        transition: box-shadow 0.2s, background 0.2s !important;
+      position: fixed !important;
+      top: 8px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 98vw !important;
+      max-width: 1800px;
+      z-index: 9999 !important;
+      background: #2c80bc !important;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
+      border-radius: 18px !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
+      transition: box-shadow 0.2s, background 0.2s !important;
     }
     body {
-        padding-top: 66px !important;
+      padding-top: 66px !important;
     }`;
     document.head.appendChild(style);
-    console.log('[VTOP Enhance] navbar.css injected as <style>');
+    console.log('[VTOP UI Revamp] navbar style injected');
   }
-  function removeCSS() {
-    // Remove any <style> tags with a marker for navbar styles
-    const styles = document.querySelectorAll('style[data-vtop-enhance-navbar]');
-    styles.forEach(style => style.remove());
+  function removeNavbarStyle() {
+    document.querySelectorAll('style[data-vtop-enhance-navbar]').forEach(style => style.remove());
     document.body.offsetHeight;
-    console.log('[VTOP Enhance] navbar.css removed');
+    console.log('[VTOP UI Revamp] navbar style removed');
   }
 
-  // --- Main update logic ---
+  // --- Main feature toggling ---
   function updateFeatures(settings) {
     if (!settings.extensionEnabled) {
-      removeCSS();
-      // Remove any feature artifacts if possible (scripts are self-removing, but try)
-      // Optionally, reload page or clean up DOM here if needed
+      removeNavbarStyle();
       return;
     }
-    // TopBar (navbar.css)
-    if (settings.topBar) {
-      injectCSS();
-    } else {
-      removeCSS();
-    }
-    // Dock
-    if (settings.dock) {
+    // Dock & TopBar (combined)
+    if (settings.dock && settings.topBar) {
+      injectNavbarStyle();
       injectScript('vtop-dock-inject.js', 'vtop-dock-inject');
     } else {
-      // No reliable way to remove injected dock, unless dock script supports it
+      removeNavbarStyle();
     }
     // Spotlight
     if (settings.spotlight) {
       injectScript('spotlight-fix.js', 'vtop-spotlight-fix');
-    } else {
-      // No reliable way to remove injected spotlight, unless script supports it
     }
     // Loading
     if (settings.loading) {
       injectScript('vtop-loading.js', 'vtop-loading');
-    } else {
-      // No reliable way to remove injected loading, unless script supports it
     }
-    // Dark Mode
+    // Tools (PDF Open & Dark Mode handled elsewhere)
     if (settings.darkMode) {
       injectScript('darkreader.min.js', 'vtop-darkreader');
       injectScript('darkmode.js', 'vtop-darkmode');
-    } else {
-      // No reliable way to remove dark mode, unless script supports it
     }
-    // PDF Open (handled as a content script, not injected here)
   }
 
-  // --- Initial load ---
+  // --- Initial load and storage listener ---
+  const defaultSettings = {
+    extensionEnabled: true,
+    dock: true,
+    topBar: true,
+    spotlight: true,
+    loading: true,
+    darkMode: true,
+    pdfOpen: true
+  };
   if (chrome?.storage) {
-    chrome.storage.local.get({
-      extensionEnabled: true,
-      dock: true,
-      topBar: true,
-      spotlight: true,
-      loading: true,
-      darkMode: false,
-      pdfOpen: false
-    }, updateFeatures);
-    // Listen for changes
+    chrome.storage.local.get(defaultSettings, updateFeatures);
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local') return;
-      chrome.storage.local.get({
-        extensionEnabled: true,
-        dock: true,
-        topBar: true,
-        spotlight: true,
-        loading: true,
-        darkMode: false,
-        pdfOpen: false
-      }, updateFeatures);
+      chrome.storage.local.get(defaultSettings, updateFeatures);
     });
   } else {
     // Fallback: enable all by default
-    injectCSS();
+    injectNavbarStyle();
     injectScript('vtop-dock-inject.js', 'vtop-dock-inject');
     injectScript('spotlight-fix.js', 'vtop-spotlight-fix');
     injectScript('vtop-loading.js', 'vtop-loading');
