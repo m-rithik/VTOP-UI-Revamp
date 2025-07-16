@@ -68,12 +68,12 @@ function Popup() {
       ),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
         React.createElement('label', { style: { flex: 1, color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Dock & TopBar'),
-        React.createElement('input', {
-          type: 'checkbox',
+          React.createElement('input', {
+            type: 'checkbox',
           checked: settings.dock && settings.topBar,
           onChange: () => handleToggle('dockTopBar'),
           disabled: !settings.extensionEnabled
-        })
+          })
       ),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
         React.createElement('label', { style: { flex: 1, textTransform: 'capitalize', color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Spotlight'),
