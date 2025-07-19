@@ -4,6 +4,19 @@
   const BUTTON_ID = 'vtop-pdfviewonly-btn';
   const FORM_ID = "getDownloadSemPdfButtonForm";
 
+  // --- NEW: Sync with chrome.storage.local on load ---
+  function syncFromChromeStorage() {
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get({ pdfOpen: true }, (result) => {
+        const enabled = !!result.pdfOpen;
+        localStorage.setItem(TOGGLE_KEY, enabled ? '1' : '0');
+        updateButton();
+      });
+    } else {
+      updateButton();
+    }
+  }
+
   // Toggle state management
   function getToggleState() {
     return localStorage.getItem(TOGGLE_KEY) === '1';
@@ -11,6 +24,10 @@
   
   function setToggleState(enabled) {
     localStorage.setItem(TOGGLE_KEY, enabled ? '1' : '0');
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ pdfOpen: enabled });
+    }
+    updateButton();
   }
 
   // Create toggle button
@@ -129,8 +146,7 @@
   // Initialize
   function init() {
     injectButton();
-    
-    // Retry button injection
+    syncFromChromeStorage();
     setInterval(injectButton, 1000);
   }
 

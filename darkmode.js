@@ -5,6 +5,21 @@
   const TRANSITION_CLASS = 'vtop-darkmode-transition';
   const TRANSITION_DURATION = 190; // ms (very fast, 0.19s)
 
+  // --- NEW: Sync with chrome.storage.local on load ---
+  function syncFromChromeStorage() {
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get({ darkMode: true }, (result) => {
+        const enabled = !!result.darkMode;
+        localStorage.setItem(DARKMODE_KEY, enabled ? '1' : '0');
+        setDarkMode(enabled, true);
+      });
+    } else {
+      // fallback: use localStorage
+      const enabled = localStorage.getItem(DARKMODE_KEY) === '1';
+      setDarkMode(enabled, true);
+    }
+  }
+
   function injectTransitionStyle() {
     if (document.getElementById('vtop-darkmode-transition-style')) return;
     const style = document.createElement('style');
@@ -78,7 +93,7 @@
     }
   }
 
-  function setDarkMode(enabled) {
+  function setDarkMode(enabled, skipStorage) {
     if (!window.DarkReader) {
       console.error('[VTOP Enhance] DarkReader is not available in setDarkMode.');
       return;
@@ -100,6 +115,9 @@
     }
     // Update button icon
     updateButtonIcon(enabled);
+    if (!skipStorage && typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ darkMode: enabled });
+    }
   }
 
   function injectDarkModeButton() {
@@ -116,9 +134,8 @@
       setDarkMode(enabled);
       btn.style.color = '#222';
     });
-    // Set initial state
-    const enabled = localStorage.getItem(DARKMODE_KEY) === '1';
-    setDarkMode(enabled);
+    // Set initial state from chrome.storage.local
+    syncFromChromeStorage();
     btn.style.color = '#222';
     userPhoto.parentNode.insertBefore(btn, userPhoto);
     console.log('[VTOP Enhance] Dark mode button injected to the left of user photo.');

@@ -98,23 +98,26 @@
   document.head.appendChild(style);
 
   function rearrangeDashboard() {
+    // Only run on dashboard/home page
+    if (!document.getElementById('course-data')) return false;
     // Find the main dashboard row
     let mainRow = document.querySelector('.row.p-1.p-md-2.p-lg-3');
     if (!mainRow) mainRow = document.querySelector('#b5-pagewrapper .row');
-    if (!mainRow) return false;
-    mainRow.classList.add('vtop-enhance-mainrow-margin');
-
-    // Get left and right columns
-    let leftCol = mainRow.querySelector('.col-12.col-md-8');
-    let rightCol = mainRow.querySelector('.col-12.col-md-4');
-    if (!leftCol || !rightCol) {
-      const cols = mainRow.querySelectorAll('.col-12');
-      if (cols.length >= 2) {
-        leftCol = cols[0];
-        rightCol = cols[1];
+    // Only run on home page: require mainRow, leftCol, and rightCol
+    let leftCol = null, rightCol = null;
+    if (mainRow) {
+      leftCol = mainRow.querySelector('.col-12.col-md-8');
+      rightCol = mainRow.querySelector('.col-12.col-md-4');
+      if (!leftCol || !rightCol) {
+        const cols = mainRow.querySelectorAll('.col-12');
+        if (cols.length >= 2) {
+          leftCol = cols[0];
+          rightCol = cols[1];
+        }
       }
     }
-    if (!leftCol || !rightCol) return false;
+    if (!mainRow || !leftCol || !rightCol) return false;
+    mainRow.classList.add('vtop-enhance-mainrow-margin');
     leftCol.classList.add('vtop-enhance-left-col');
     rightCol.classList.add('vtop-enhance-right-col');
 
