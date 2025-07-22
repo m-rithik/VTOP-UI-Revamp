@@ -1,5 +1,6 @@
 // --- VTOP PDF Auto-Open with Toggle ---
 (() => {
+  "use strict";
   const TOGGLE_KEY = 'vtop-pdfviewonly-enabled';
   const BUTTON_ID = 'vtop-pdfviewonly-btn';
   const FORM_ID = "getDownloadSemPdfButtonForm";
@@ -138,8 +139,8 @@
 
       chrome.runtime.sendMessage({ type: "open-pdf", dataUrl });
     } catch (e) {
-      console.error("[VTOP-AutoOpen] failed:", e);
-      alert("Couldn't auto-open the document – see console.");
+      console.error('[VTOP-AutoOpen] failed:', e);
+      console.warn("Couldn't auto-open the document – see console.");
     }
   }
 

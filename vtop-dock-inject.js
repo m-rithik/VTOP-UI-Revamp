@@ -1,4 +1,5 @@
 (function() {
+  "use strict";
   // --- CSS ---
   const style = document.createElement('style');
   style.innerHTML = `
@@ -314,6 +315,19 @@
     return `verifyMenu=true&authorizedID=${encodeURIComponent(id)}&_csrf=${encodeURIComponent(csrfValue)}&nocache=${Date.now()}`;
   }
 
+  function safeAjaxCall(item, dataText) {
+    const fn = item.ajax === 'B5' ? window.ajaxB5Call : window.ajaxCall;
+    if (typeof fn === 'function') {
+      fn(item.url, dataText);
+    } else {
+      console.warn(`[VTOP Dock] ${item.ajax === 'B5' ? 'ajaxB5Call' : 'ajaxCall'} not found!`);
+    }
+  }
+
+  function closeAllDropdowns() {
+    document.querySelectorAll('.vtop-dock-dropdown.open').forEach(dd => dd.classList.remove('open'));
+  }
+
   function renderDropdown(menu, parent) {
     menu.forEach(item => {
       if (item.children) {
@@ -332,21 +346,8 @@
         link.href = 'javascript:void(0)';
         link.onclick = (e) => {
           e.preventDefault();
-          const dataText = buildDataText();
-          if (item.ajax === 'B5') {
-            if (typeof window.ajaxB5Call === 'function') {
-              window.ajaxB5Call(item.url, dataText);
-            } else {
-              alert('ajaxB5Call not found!');
-            }
-          } else {
-            if (typeof window.ajaxCall === 'function') {
-              window.ajaxCall(item.url, dataText);
-            } else {
-              alert('ajaxCall not found!');
-            }
-          }
-          document.querySelectorAll('.vtop-dock-dropdown.open').forEach(dd => dd.classList.remove('open'));
+          safeAjaxCall(item, buildDataText());
+          closeAllDropdowns();
         };
         parent.appendChild(link);
       }
@@ -365,7 +366,7 @@
       let openTimeout = null;
       let closeTimeout = null;
 
-      dockMenus.forEach((menu, idx) => {
+      dockMenus.forEach((menu) => {
         const iconBtn = document.createElement('div');
         iconBtn.className = 'vtop-dock-icon';
         iconBtn.innerHTML = `<i class="fa ${menu.icon}"></i>`;
@@ -387,21 +388,8 @@
           link.href = 'javascript:void(0)';
           link.onclick = (e) => {
             e.preventDefault();
-            const dataText = buildDataText();
-            if (menu.ajax === 'B5') {
-              if (typeof window.ajaxB5Call === 'function') {
-                window.ajaxB5Call(menu.url, dataText);
-              } else {
-                alert('ajaxB5Call not found!');
-              }
-            } else {
-              if (typeof window.ajaxCall === 'function') {
-                window.ajaxCall(menu.url, dataText);
-              } else {
-                alert('ajaxCall not found!');
-              }
-            }
-            document.querySelectorAll('.vtop-dock-dropdown.open').forEach(dd => dd.classList.remove('open'));
+            safeAjaxCall(menu, buildDataText());
+            closeAllDropdowns();
           };
           dropdown.appendChild(link);
         }

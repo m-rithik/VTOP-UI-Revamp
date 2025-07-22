@@ -1,4 +1,5 @@
 (function() {
+  "use strict";
   // --- CSS for loading overlay ---
   const style = document.createElement('style');
   style.innerHTML = `

@@ -1,3 +1,4 @@
+"use strict";
 const defaultSettings = {
   extensionEnabled: true,
   dock: true,

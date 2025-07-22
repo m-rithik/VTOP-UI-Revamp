@@ -1,4 +1,5 @@
 (function() {
+  "use strict";
   console.log('🔧 Spotlight Fix: Custom Spotlight arrangement loaded');
 
   // Add CSS for layout adjustments and toggle button

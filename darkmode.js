@@ -1,5 +1,6 @@
 // --- Begin darkmode.js logic ---
 (function() {
+  "use strict";
   console.log('[VTOP Enhance] darkmode.js loaded');
   const DARKMODE_KEY = 'vtop-enhance-darkmode';
   const TRANSITION_CLASS = 'vtop-darkmode-transition';

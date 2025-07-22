@@ -5,6 +5,7 @@
 // @description  Injects VTOP UI Revamp features (Dock, TopBar, Spotlight, Loading, Tools) based on user settings.
 // ==/UserScript==
 (function () {
+  "use strict";
   // --- Helpers ---
   function injectScript(filename, id) {
     if (id && document.getElementById(id)) return;
