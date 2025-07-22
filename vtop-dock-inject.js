@@ -134,7 +134,7 @@
   }
 
   // --- Full sidebar menu structure (all 19 sections, all subsections, based on your HTML) ---
-  const dockMenus = [
+  const staticDockMenus = [
     { icon: 'fa-phone-square', label: 'Contact Us', url: 'hrms/contactDetails', ajax: 'B5' },
     { icon: 'fa-envelope', label: 'Generic Feedback', children: [
       { label: 'Feedback Form', url: 'others/genericfeedback/initViewGenericFeedback', ajax: 'B5' },
@@ -303,6 +303,8 @@
     ] },
   ];
 
+  let dockMenus = staticDockMenus.slice();
+
   function buildDataText() {
     const id = document.getElementById('authorizedIDX')?.value || '';
     let csrfValue = '';
@@ -326,6 +328,48 @@
 
   function closeAllDropdowns() {
     document.querySelectorAll('.vtop-dock-dropdown.open').forEach(dd => dd.classList.remove('open'));
+  }
+
+  function getAjaxType(link) {
+    const onclick = link.getAttribute('onclick') || '';
+    if (/ajaxB5Call/i.test(onclick)) return 'B5';
+    if (/ajaxCall/i.test(onclick)) return 'Main';
+    return link.dataset.ajax || link.dataset.method || link.dataset.type || 'Main';
+  }
+
+  function parseMenuList(list) {
+    const items = [];
+    if (!list) return items;
+    list.querySelectorAll(':scope > li').forEach(li => {
+      const anchor = li.querySelector(':scope > a[data-url]');
+      if (!anchor) return;
+      const url = anchor.getAttribute('data-url');
+      if (!url) return;
+      const obj = {
+        label: anchor.textContent.trim(),
+        url,
+        ajax: getAjaxType(anchor)
+      };
+      const icon = anchor.querySelector('i.fa');
+      if (icon) {
+        const cls = Array.from(icon.classList).find(c => c.startsWith('fa-'));
+        if (cls) obj.icon = cls;
+      }
+      if (!obj.icon) obj.icon = 'fa-circle';
+      const childList = li.querySelector(':scope > ul');
+      const children = parseMenuList(childList);
+      if (children.length) obj.children = children;
+      items.push(obj);
+    });
+    return items;
+  }
+
+  function parseDockMenus() {
+    const container = document.querySelector('#expandedSideBar, #sidePanel');
+    if (!container) return [];
+    const firstList = container.querySelector('ul');
+    if (!firstList) return [];
+    return parseMenuList(firstList);
   }
 
   function renderDropdown(menu, parent) {
@@ -450,5 +494,16 @@
       setTimeout(waitForVtopAjax, 100);
     }
   }
-  waitForVtopAjax();
+
+  function waitForMenus() {
+    const menus = parseDockMenus();
+    if (menus.length) {
+      dockMenus = menus;
+      waitForVtopAjax();
+    } else {
+      setTimeout(waitForMenus, 100);
+    }
+  }
+
+  waitForMenus();
 })(); 
