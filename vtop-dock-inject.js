@@ -319,8 +319,13 @@
   /* ---------- 5. BOOTSTRAP WHEN PAGE AJAX IS READY ---------- */
   (function wait() {
     if (typeof window.ajaxCall === 'function' && typeof window.ajaxB5Call === 'function') {
-      const menu = scanSidebar();
-      if (menu.length) initDock(menu);
+      const sidebar = document.querySelector('#sidePanel');
+      if (sidebar && sidebar.querySelectorAll('.btn-group.dropend').length > 0) {
+        const menu = scanSidebar();
+        if (menu.length) initDock(menu);
+      } else {
+        setTimeout(wait, 100);
+      }
     } else {
       setTimeout(wait, 100);
     }
