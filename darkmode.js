@@ -95,7 +95,7 @@
 
   function setDarkMode(enabled, skipStorage) {
     if (!window.DarkReader) {
-      console.error('[VTOP Enhance] DarkReader is not available in setDarkMode.');
+      console.log('[VTOP Enhance] DarkReader is not available in setDarkMode.');
       return;
     }
     // Add transition class for smooth shift
