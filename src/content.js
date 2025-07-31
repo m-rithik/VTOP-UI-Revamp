@@ -53,22 +53,22 @@
     // Dock & TopBar (combined)
     if (settings.dock && settings.topBar) {
       injectNavbarStyle();
-      injectScript('vtop-dock-inject.js', 'vtop-dock-inject');
+      injectScript('src/vtop-dock-inject.js', 'vtop-dock-inject');
     } else {
       removeNavbarStyle();
     }
     // Spotlight
     if (settings.spotlight) {
-      injectScript('spotlight-fix.js', 'vtop-spotlight-fix');
+      injectScript('src/spotlight-fix.js', 'vtop-spotlight-fix');
     }
     // Loading
     if (settings.loading) {
-      injectScript('vtop-loading.js', 'vtop-loading');
+      injectScript('src/vtop-loading.js', 'vtop-loading');
     }
     // Tools (PDF Open & Dark Mode handled elsewhere)
     if (settings.darkMode) {
-      injectScript('darkreader.min.js', 'vtop-darkreader');
-      injectScript('darkmode.js', 'vtop-darkmode');
+      injectScript('src/darkreader.min.js', 'vtop-darkreader');
+      injectScript('src/darkmode.js', 'vtop-darkmode');
     }
   }
 
@@ -91,10 +91,10 @@
   } else {
     // Fallback: enable all by default
     injectNavbarStyle();
-    injectScript('vtop-dock-inject.js', 'vtop-dock-inject');
-    injectScript('spotlight-fix.js', 'vtop-spotlight-fix');
-    injectScript('vtop-loading.js', 'vtop-loading');
-    injectScript('darkreader.min.js', 'vtop-darkreader');
-    injectScript('darkmode.js', 'vtop-darkmode');
+    injectScript('src/vtop-dock-inject.js', 'vtop-dock-inject');
+    injectScript('src/spotlight-fix.js', 'vtop-spotlight-fix');
+    injectScript('src/vtop-loading.js', 'vtop-loading');
+    injectScript('src/darkreader.min.js', 'vtop-darkreader');
+    injectScript('src/darkmode.js', 'vtop-darkmode');
   }
 })();

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VTOP UI",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Fixes grandpa VTOP.",
   "content_scripts": [
     {
@@ -9,13 +9,13 @@
         "https://vtop.vit.ac.in/*"
       ],
       "js": [
-        "content.js",
-        "pdf-autoopen.js"
+        "src/content.js",
+        "src/pdf-autoopen.js"
       ]
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   },
   "host_permissions": [
     "https://vtop.vit.ac.in/*"
@@ -30,12 +30,12 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "vtop-dock-inject.js",
-        "vtop-loading.js",
-        "spotlight-fix.js",
+        "src/vtop-dock-inject.js",
+        "src/vtop-loading.js",
+        "src/spotlight-fix.js",
         "topbar-fix.js",
-        "darkmode.js",
-        "darkreader.min.js"
+        "src/darkmode.js",
+        "src/darkreader.min.js"
       ],
       "matches": [
         "https://vtop.vit.ac.in/*"
@@ -43,18 +43,18 @@
     }
   ],
   "icons": {
-    "16": "logo.png",
-    "32": "logo.png",
-    "48": "logo.png",
-    "128": "logo.png"
+    "16": "src/logo.png",
+    "32": "src/logo.png",
+    "48": "src/logo.png",
+    "128": "src/logo.png"
   },
   "action": {
-    "default_popup": "popup2.html",
+    "default_popup": "src/popup2.html",
     "default_icon": {
-      "16": "logo.png",
-      "32": "logo.png",
-      "48": "logo.png",
-      "128": "logo.png"
+      "16": "src/logo.png",
+      "32": "src/logo.png",
+      "48": "src/logo.png",
+      "128": "src/logo.png"
     }
   }
 }
