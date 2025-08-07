@@ -6,6 +6,7 @@ const defaultSettings = {
   loading: true,
   darkMode: true,
   pdfOpen: true,
+  courseSort: true,
 };
 
 function Popup() {
@@ -90,6 +91,15 @@ function Popup() {
           type: 'checkbox',
           checked: settings.loading,
           onChange: () => handleToggle('loading'),
+          disabled: !settings.extensionEnabled
+        })
+      ),
+      React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
+        React.createElement('label', { style: { flex: 1, textTransform: 'capitalize', color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Course Dropdown Sort'),
+        React.createElement('input', {
+          type: 'checkbox',
+          checked: settings.courseSort,
+          onChange: () => handleToggle('courseSort'),
           disabled: !settings.extensionEnabled
         })
       ),
