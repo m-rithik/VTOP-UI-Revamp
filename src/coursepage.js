@@ -245,24 +245,75 @@
 
     function setPageLengthAll(table) {
         try {
-            // If jQuery DataTables API is available and already initialized, use it
+            // Prefer jQuery DataTables API when available
             const jq = window.jQuery || window.$;
             if (jq && jq.fn && jq.fn.dataTable) {
+                // Bind once to keep forcing -1 on init/draw/length changes
+                const bindOnce = () => {
+                    if (table.dataset.noPagingBound === '1') return;
+                    table.dataset.noPagingBound = '1';
+                    jq(table).on('init.dt draw.dt length.dt processing.dt', function () {
+                        try {
+                            const api = jq(table).DataTable();
+                            if (api && api.page && typeof api.page.len === 'function') {
+                                // Force ALL rows (no paging)
+                                if (api.page.len() !== -1) api.page.len(-1).draw(false);
+                            }
+                            // Hide pagination controls if present
+                            const container = api && api.table ? api.table().container() : null;
+                            if (container) {
+                                const pag = container.querySelector('.dataTables_paginate');
+                                if (pag) pag.style.display = 'none';
+                                const lenSel = container.querySelector('.dataTables_length select');
+                                if (lenSel && lenSel.value !== '-1') {
+                                    lenSel.value = '-1';
+                                    lenSel.dispatchEvent(new Event('change', { bubbles: true }));
+                                }
+                            }
+                        } catch (_) {}
+                    });
+                };
+
                 if (jq.fn.dataTable.isDataTable(table)) {
+                    // Already initialized – force now and bind events
                     const api = jq(table).DataTable();
                     if (api && api.page && typeof api.page.len === 'function') {
-                        api.page.len(-1).draw(false); // -1 => show all rows
-                        return;
+                        api.page.len(-1).draw(false);
                     }
+                    bindOnce();
+                    return;
                 }
+
+                // Not initialized yet – bind and also poll briefly in case init happens later
+                bindOnce();
+                if (!table._noPagingPoll) {
+                    table._noPagingPoll = setInterval(() => {
+                        try {
+                            if (jq.fn.dataTable.isDataTable(table)) {
+                                const api = jq(table).DataTable();
+                                if (api && api.page && typeof api.page.len === 'function' && api.page.len() !== -1) {
+                                    api.page.len(-1).draw(false);
+                                }
+                            }
+                        } catch (_) {}
+                    }, 1000);
+                    setTimeout(() => {
+                        clearInterval(table._noPagingPoll);
+                        table._noPagingPoll = null;
+                    }, 15000);
+                }
+                return;
             }
-            // Fallback: try changing the length dropdown to "All" (-1)
+
+            // Fallback: try toggling the length dropdown and hide paginator if DataTables API isn't exposed
             const wrapper = table.closest('.dataTables_wrapper') || table.closest('.card-body') || document;
             const lengthSelect = wrapper && wrapper.querySelector('.dataTables_length select');
             if (lengthSelect && lengthSelect.value !== '-1') {
                 lengthSelect.value = '-1';
                 lengthSelect.dispatchEvent(new Event('change', { bubbles: true }));
             }
+            const paginate = wrapper && wrapper.querySelector('.dataTables_paginate');
+            if (paginate) paginate.style.display = 'none';
         } catch (_) {}
     }
 
