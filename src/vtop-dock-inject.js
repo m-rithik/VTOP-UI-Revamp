@@ -8,18 +8,18 @@
     #vtop-dock {
       position: fixed;
       left: 50%;
-      bottom: 24px;
+      bottom: calc(24px * var(--ui-scale, 1));
       transform: translateX(-50%);
       z-index: 9999;
       display: flex;
       flex-direction: row;
       align-items: flex-end;
       background: rgba(255,255,255,0.85);
-      border-radius: 24px;
+      border-radius: calc(24px * var(--ui-scale, 1));
       box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-      padding: 10px 18px;
-      gap: 14px;
-      min-height: 56px;
+      padding: calc(10px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1));
+      gap: calc(14px * var(--ui-scale, 1));
+      min-height: calc(56px * var(--ui-scale, 1));
       transition: opacity 0.18s cubic-bezier(.4,0,.2,1), bottom 0.18s cubic-bezier(.4,0,.2,1);
       opacity: 0;
       pointer-events: none;
@@ -27,17 +27,17 @@
     #vtop-dock.vtop-dock-visible {
       opacity: 1;
       pointer-events: auto;
-      bottom: 32px;
+      bottom: calc(32px * var(--ui-scale, 1));
     }
     .vtop-dock-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: calc(44px * var(--ui-scale, 1));
+      height: calc(44px * var(--ui-scale, 1));
+      border-radius: calc(14px * var(--ui-scale, 1));
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: calc(28px * var(--ui-scale, 1));
       cursor: pointer;
       transition: transform 0.18s cubic-bezier(.4,0,.2,1), box-shadow 0.18s cubic-bezier(.4,0,.2,1);
       position: relative;
@@ -48,14 +48,14 @@
       background: rgba(0,0,0,0.04);
     }
     .vtop-dock-search {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: calc(44px * var(--ui-scale, 1));
+      height: calc(44px * var(--ui-scale, 1));
+      border-radius: calc(14px * var(--ui-scale, 1));
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: calc(28px * var(--ui-scale, 1));
       cursor: pointer;
       transition: transform 0.18s cubic-bezier(.4,0,.2,1), box-shadow 0.18s cubic-bezier(.4,0,.2,1);
       position: relative;
@@ -72,16 +72,16 @@
     }
     .vtop-dock-dropdown {
       position: absolute;
-      bottom: 56px;
+      bottom: calc(56px * var(--ui-scale, 1));
       left: 50%;
       transform: translateX(-50%) scale(0.98);
-      min-width: 240px;
-      max-height: 340px;
+      min-width: calc(240px * var(--ui-scale, 1));
+      max-height: calc(340px * var(--ui-scale, 1));
       overflow-y: auto;
       background: #fff;
-      border-radius: 16px;
+      border-radius: calc(16px * var(--ui-scale, 1));
       box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-      padding: 10px 0;
+      padding: calc(10px * var(--ui-scale, 1)) 0;
       z-index: 10000;
       opacity: 0;
       pointer-events: none;
@@ -96,15 +96,15 @@
       visibility: visible;
     }
     .vtop-dock-search-dropdown {
-      min-width: 320px;
-      max-width: 400px;
+      min-width: calc(320px * var(--ui-scale, 1));
+      max-width: calc(400px * var(--ui-scale, 1));
     }
     .vtop-dock-search-input {
       width: 100%;
-      padding: 12px 16px;
+      padding: calc(12px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1));
       border: none;
       border-bottom: 1px solid #e0e0e0;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-scale, 1));
       outline: none;
       background: transparent;
       color: #333;
@@ -114,17 +114,17 @@
     }
     .vtop-dock-dropdown .dock-section-title {
       font-weight: bold;
-      font-size: 1rem;
-      padding: 6px 18px 4px 18px;
+      font-size: calc(1rem * var(--ui-scale, 1));
+      padding: calc(6px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1)) calc(4px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1));
       color: #1a237e;
     }
     .vtop-dock-dropdown .dock-link, .vtop-dock-dropdown .dock-subsection {
       display: block;
-      padding: 7px 22px;
+      padding: calc(7px * var(--ui-scale, 1)) calc(22px * var(--ui-scale, 1));
       color: #222;
       text-decoration: none;
-      border-radius: 8px;
-      font-size: 0.98rem;
+      border-radius: calc(8px * var(--ui-scale, 1));
+      font-size: calc(0.98rem * var(--ui-scale, 1));
       cursor: pointer;
       transition: background 0.13s cubic-bezier(.4,0,.2,1);
       white-space: nowrap;
@@ -135,41 +135,41 @@
     }
     .vtop-dock-dropdown .dock-subsection {
       font-weight: 500;
-      margin-top: 4px;
-      margin-bottom: 2px;
+      margin-top: calc(4px * var(--ui-scale, 1));
+      margin-bottom: calc(2px * var(--ui-scale, 1));
       background: #f5f7fa;
       color: #3949ab;
     }
     .vtop-dock-dropdown .dock-nested {
-      margin-left: 12px;
-      border-left: 2px solid #e3e8fd;
-      padding-left: 8px;
+      margin-left: calc(12px * var(--ui-scale, 1));
+      border-left: calc(2px * var(--ui-scale, 1)) solid #e3e8fd;
+      padding-left: calc(8px * var(--ui-scale, 1));
     }
     .vtop-dock-dropdown .dock-search-result {
-      padding: 8px 18px;
+      padding: calc(8px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1));
       color: #666;
-      font-size: 0.9rem;
+      font-size: calc(0.9rem * var(--ui-scale, 1));
       font-style: italic;
     }
     .vtop-dock-dropdown .dock-search-highlight {
       background: #fff3cd;
-      padding: 1px 2px;
-      border-radius: 2px;
+      padding: calc(1px * var(--ui-scale, 1)) calc(2px * var(--ui-scale, 1));
+      border-radius: calc(2px * var(--ui-scale, 1));
     }
     #vtop-dock::-webkit-scrollbar, .vtop-dock-dropdown::-webkit-scrollbar {
-      width: 6px;
+      width: calc(6px * var(--ui-scale, 1));
       background: #e3e8fd;
     }
     #vtop-dock::-webkit-scrollbar-thumb, .vtop-dock-dropdown::-webkit-scrollbar-thumb {
       background: #b3baf7;
-      border-radius: 8px;
+      border-radius: calc(8px * var(--ui-scale, 1));
     }
     #vtop-dock-hover-area {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 80px;
+      height: calc(80px * var(--ui-scale, 1));
       z-index: 9998;
       pointer-events: auto;
     }

@@ -154,6 +154,217 @@
         return 0;
     }
 
+    // --- Faculty filter for "Material Details" table (Uploaded By) ---
+    const FACULTY_FILTER_KEY = 'vtopEnhance:facultyFilter';
+
+    function findMaterialTable() {
+        // Primary: explicit id used on VTOP
+        let tbl = document.getElementById('materialTable');
+        if (tbl && tbl.tBodies && tbl.tBodies.length) return tbl;
+
+        // Fallback: table whose thead contains "Material Detail" and "Uploaded By"
+        const tables = Array.from(document.querySelectorAll('table'));
+        for (const t of tables) {
+            const headText = (t.tHead && t.tHead.textContent) ? t.tHead.textContent : '';
+            if (/Material Detail/i.test(headText) && /Uploaded By/i.test(headText)) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    function parseFacultyFromCell(cell) {
+        const txt = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+        // Prefer token between the first and second " - "
+        const parts = txt.split(' - ').map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) return parts[1];
+        // Regex fallback: "ID - NAME - ..."
+        const m = txt.match(/^\s*\d+\s*-\s*(.*?)\s*-\s*/);
+        if (m && m[1]) return m[1];
+        return txt;
+    }
+
+    function ensureFacultyUI(table) {
+        if (document.getElementById('facultyFilter')) {
+            return {
+                filterEl: document.getElementById('facultyFilter'),
+                countEl: document.getElementById('facultyCount'),
+                resetBtn: document.getElementById('resetFaculty'),
+                ui: document.getElementById('facultyFilterUI')
+            };
+        }
+        const cardBody = table.closest('.card-body') || table.parentElement;
+        const wrapper = document.createElement('div');
+        wrapper.id = 'facultyFilterUI';
+        wrapper.className = 'd-flex flex-wrap align-items-center gap-2 mb-3';
+        wrapper.innerHTML = `
+        <label for="facultyFilter" class="fw-semibold mb-0">Faculty:</label>
+        <select id="facultyFilter" class="form-select form-select-sm" style="min-width:220px;max-width:320px;">
+          <option value="">All Faculties</option>
+        </select>
+        <span id="facultyCount" class="badge bg-secondary"></span>
+        <button id="resetFaculty" type="button" class="btn btn-sm btn-outline-secondary ms-auto">Reset</button>
+      `;
+        const tblWrap = cardBody?.querySelector('.table-responsive') || table;
+        (cardBody || document.body).insertBefore(wrapper, tblWrap || table);
+        return {
+            filterEl: wrapper.querySelector('#facultyFilter'),
+            countEl: wrapper.querySelector('#facultyCount'),
+            resetBtn: wrapper.querySelector('#resetFaculty'),
+            ui: wrapper
+        };
+    }
+
+    // ---- Visibility helpers tied to the same toggle (courseSort) ----
+    function getCourseUiEnabled(cb) {
+        try {
+            if (typeof chrome !== 'undefined' && chrome.storage) {
+                chrome.storage.local.get(['courseSort'], (res) => cb(res.courseSort !== false));
+            } else { cb(true); }
+        } catch(_) { cb(true); }
+    }
+
+    function setDtButtonsVisibility(table, visible) {
+        try {
+            const scope = table.closest('.dataTables_wrapper') || table.closest('.card-body') || table.parentElement || document;
+            const btns = scope.querySelector('.dt-buttons');
+            if (btns) btns.style.display = 'none'; // always hidden
+        } catch (_) {}
+    }
+
+    function setSearchVisibility(table, visible) {
+        try {
+            const wrapper = table.closest('.dataTables_wrapper') || table.closest('.card-body') || document;
+            // DataTables search container is `<table id>_filter` and also has class `.dataTables_filter`
+            const byId = table.id ? wrapper.querySelector('#' + table.id + '_filter') : null;
+            const byClass = wrapper.querySelector('.dataTables_filter');
+            const filterBox = byId || byClass;
+            if (filterBox) filterBox.style.display = visible ? '' : 'none';
+        } catch (_) {}
+    }
+
+    function setFacultyUiVisibility(visible) {
+        try {
+            const ui = document.getElementById('facultyFilterUI');
+            if (ui) ui.style.display = visible ? '' : 'none';
+        } catch (_) {}
+    }
+
+    function indexRowsAndPopulateSelect(table, filterEl) {
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody?.rows || []);
+        const names = new Set();
+
+        rows.forEach(r => {
+            const uploadedCell = r.cells[3]; // "Uploaded By" column
+            if (!uploadedCell) return;
+            const name = parseFacultyFromCell(uploadedCell);
+            r.dataset.faculty = (name || '').toUpperCase();
+            if (name) names.add(name);
+        });
+
+        // Populate once (keep "All Faculties")
+        if (filterEl && filterEl.options.length <= 1) {
+            [...names].sort((a,b)=>a.localeCompare(b)).forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n.toUpperCase();
+                opt.textContent = n;
+                filterEl.appendChild(opt);
+            });
+        }
+        return rows;
+    }
+
+    function applyFacultyFilter(table, value, countEl) {
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody?.rows || []);
+        let shown = 0;
+
+        rows.forEach(r => {
+            const show = !value || r.dataset.faculty === value;
+            r.style.display = show ? '' : 'none';
+            if (show) shown++;
+        });
+
+        // Renumber first column (#)
+        let i = 1;
+        rows.forEach(r => {
+            if (r.style.display !== 'none' && r.cells[0]) r.cells[0].textContent = i++;
+        });
+
+        if (countEl) countEl.textContent = `${shown}/${rows.length}`;
+        try { localStorage.setItem(FACULTY_FILTER_KEY, value || ''); } catch (_) {}
+    }
+
+    function initFacultyFilter() {
+        try {
+            const table = findMaterialTable();
+            if (!table) return false;
+
+            getCourseUiEnabled((enabled) => {
+                // Export buttons always hidden; hide Search permanently
+                setDtButtonsVisibility(table, false);
+                setSearchVisibility(table, false);
+
+                if (!enabled) {
+                    // When disabled, hide our Faculty UI and stop here
+                    setFacultyUiVisibility(false);
+                    return true;
+                }
+
+                // Ensure our Faculty filter UI exists and is visible
+                const {filterEl, countEl, resetBtn} = ensureFacultyUI(table);
+                if (countEl) countEl.style.display = 'none';
+                setFacultyUiVisibility(true);
+                indexRowsAndPopulateSelect(table, filterEl);
+
+                // Restore previous selection
+                let saved = '';
+                try { saved = localStorage.getItem(FACULTY_FILTER_KEY) || ''; } catch (_) {}
+                if (saved && filterEl.value !== saved) filterEl.value = saved;
+
+                applyFacultyFilter(table, filterEl.value, countEl);
+
+                // Bind once
+                if (!filterEl.dataset.bound) {
+                    filterEl.addEventListener('change', () => applyFacultyFilter(table, filterEl.value, countEl));
+                    if (resetBtn) {
+                        resetBtn.addEventListener('click', () => {
+                            filterEl.value = '';
+                            applyFacultyFilter(table, '', countEl);
+                        });
+                    }
+                    filterEl.dataset.bound = '1';
+                }
+
+                // Observe new rows and keep options up to date
+                if (!table.dataset.ffObserved) {
+                    const mo = new MutationObserver(() => {
+                        indexRowsAndPopulateSelect(table, filterEl);
+                        applyFacultyFilter(table, filterEl.value, countEl);
+                        // Keep export buttons hidden and keep Search hidden as well
+                        setDtButtonsVisibility(table, false);
+                        setSearchVisibility(table, false);
+                    });
+                    if (table.tBodies && table.tBodies[0]) {
+                        mo.observe(table.tBodies[0], { childList: true });
+                    }
+                    table.dataset.ffObserved = '1';
+                    window._vtopFacultyObserver = mo;
+                }
+
+                debugLog('Faculty filter initialized');
+                return true;
+            });
+
+            return true;
+        } catch (e) {
+            debugLog('Faculty filter init failed:', e);
+            return false;
+        }
+    }
+    // --- End faculty filter block ---
+
     // Track what we've already sorted to prevent re-sorting the same content
     let sortedContent = new Set();
     let allTimersStopped = false;
@@ -415,21 +626,47 @@
         return false;
     }
 
-    // Function to initialize the course page functionality
+    // Function to check if extension is enabled and initialize course page functionality
     function initCoursePage() {
-        debugLog('Initializing course page functionality...');
+        debugLog('Checking if extension is enabled...');
         
+        // Check if extension is enabled
+        if (typeof chrome !== 'undefined' && chrome.storage) {
+            chrome.storage.local.get({ extensionEnabled: true }, (result) => {
+                const extensionEnabled = !!result.extensionEnabled;
+                if (!extensionEnabled) {
+                    debugLog('Extension is disabled, skipping course page functionality');
+                    return;
+                }
+                
+                debugLog('Extension is enabled, initializing course page functionality...');
+                initCoursePageCore();
+            });
+        } else {
+            debugLog('Chrome storage not available, defaulting to enabled');
+            initCoursePageCore();
+        }
+    }
+    
+    // Core initialization function (separated for clarity)
+    function initCoursePageCore() {
         // Wait for the DOM to be ready
         if (document.readyState === 'loading') {
             debugLog('DOM still loading, waiting for DOMContentLoaded');
             document.addEventListener('DOMContentLoaded', () => {
                 debugLog('DOMContentLoaded fired');
-                setTimeout(() => sortCourseDropdown(), 100);
+                setTimeout(() => {
+                    sortCourseDropdown();
+                    initFacultyFilter();
+                }, 100);
             });
         } else {
             debugLog('DOM already ready, sorting immediately');
             // DOM is already ready
-            setTimeout(() => sortCourseDropdown(), 100);
+            setTimeout(() => {
+                sortCourseDropdown();
+                initFacultyFilter();
+            }, 100);
         }
         
         // Retry strategy with longer intervals
@@ -440,6 +677,7 @@
             const timeout = setTimeout(() => {
                 debugLog(`Retry attempt ${index + 1} after ${delay}ms`);
                 sortCourseDropdown();
+                initFacultyFilter();
             }, delay);
             window.retryTimeouts.push(timeout);
         });
@@ -461,6 +699,7 @@
             }
             
             const success = sortCourseDropdown();
+            initFacultyFilter();
             
             // Don't stop on success - keep monitoring for changes
             if (checkCount >= maxChecks) {
@@ -505,6 +744,7 @@
             if (shouldSort) {
                 debugLog('DOM mutation detected, triggering sort');
                 setTimeout(() => sortCourseDropdown(), 100); // Shorter delay for more responsive sorting
+                setTimeout(() => initFacultyFilter(), 150);
             }
         });
 
@@ -522,6 +762,28 @@
     // Initialize when the script loads
     debugLog('Course page script loaded');
     initCoursePage();
+    
+    // Listen for storage changes to handle real-time toggling
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area !== 'local') return;
+            if (changes.extensionEnabled || changes.courseSort) {
+                debugLog('Extension or course sort setting changed, reinitializing...');
+                // Clear existing functionality first
+                if (window.courseObserver) {
+                    window.courseObserver.disconnect();
+                }
+                if (window.continuousCheck) {
+                    clearInterval(window.continuousCheck);
+                }
+                if (window.retryTimeouts) {
+                    window.retryTimeouts.forEach(timeout => clearTimeout(timeout));
+                }
+                // Reinitialize
+                setTimeout(() => initCoursePage(), 100);
+            }
+        });
+    }
     
     // Expose manual trigger function for debugging
     // Use a different approach that doesn't violate CSP
@@ -557,7 +819,10 @@
     // Also trigger on window load event
     window.addEventListener('load', () => {
         debugLog('Window load event fired');
-        setTimeout(() => sortCourseDropdown(), 1000);
+        setTimeout(() => {
+            sortCourseDropdown();
+            initFacultyFilter();
+        }, 1000);
     });
 
 })();

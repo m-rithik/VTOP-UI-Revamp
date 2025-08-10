@@ -18,9 +18,10 @@
     if (document.querySelector('style[data-vtop-enhance-navbar]')) return;
     const style = document.createElement('style');
     style.setAttribute('data-vtop-enhance-navbar', 'true');
-    style.textContent = `#vtopHeader {
+    style.textContent = `:root { --ui-scale: 1; }
+#vtopHeader {
       position: fixed !important;
-      top: 8px !important;
+      top: calc(8px * var(--ui-scale)) !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       width: 98vw !important;
@@ -28,12 +29,12 @@
       z-index: 9999 !important;
       background: #2c80bc !important;
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
-      border-radius: 18px !important;
+      border-radius: calc(18px * var(--ui-scale)) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
       transition: box-shadow 0.2s, background 0.2s !important;
     }
     body {
-      padding-top: 66px !important;
+      padding-top: calc(66px * var(--ui-scale)) !important;
     }`;
     document.head.appendChild(style);
     console.log('[VTOP UI Revamp] navbar style injected');
@@ -44,12 +45,39 @@
     console.log('[VTOP UI Revamp] navbar style removed');
   }
 
+  // Compute and keep a responsive UI scale in a CSS variable
+  function computeAndApplyUIScale() {
+    const vv = window.visualViewport;
+    const vw = vv?.width || Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const vh = vv?.height || Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    // Baseline desktop 1440x900. Clamp to reasonable range.
+    const scaleW = vw / 1440;
+    const scaleH = vh / 900;
+    let scale = Math.min(scaleW, scaleH);
+    // Gentle clamp so it neither shrinks too tiny nor grows absurdly
+    scale = Math.max(0.85, Math.min(scale, 1.15));
+    document.documentElement.style.setProperty('--ui-scale', scale.toFixed(3));
+  }
+
+  function setupUIScaleListeners() {
+    if (window.__vtopEnhanceUIScaleSetup) return;
+    window.__vtopEnhanceUIScaleSetup = true;
+    computeAndApplyUIScale();
+    window.addEventListener('resize', computeAndApplyUIScale, { passive: true });
+    window.addEventListener('orientationchange', computeAndApplyUIScale, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', computeAndApplyUIScale, { passive: true });
+    }
+  }
+
   // --- Main feature toggling ---
   function updateFeatures(settings) {
     if (!settings.extensionEnabled) {
       removeNavbarStyle();
       return;
     }
+    // Ensure responsive scaling is active
+    setupUIScaleListeners();
     // Dock & TopBar (combined)
     if (settings.dock && settings.topBar) {
       injectNavbarStyle();
@@ -90,6 +118,7 @@
     });
   } else {
     // Fallback: enable all by default
+    setupUIScaleListeners();
     injectNavbarStyle();
     injectScript('src/vtop-dock-inject.js', 'vtop-dock-inject');
     injectScript('src/spotlight-fix.js', 'vtop-spotlight-fix');

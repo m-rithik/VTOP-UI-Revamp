@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VTOP UI",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Fixes grandpa VTOP.",
   "content_scripts": [
     {

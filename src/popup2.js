@@ -95,7 +95,7 @@ function Popup() {
         })
       ),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
-        React.createElement('label', { style: { flex: 1, textTransform: 'capitalize', color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Course Dropdown Sort'),
+        React.createElement('label', { style: { flex: 1, textTransform: 'capitalize', color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Course Page'),
         React.createElement('input', {
           type: 'checkbox',
           checked: settings.courseSort,
@@ -133,12 +133,12 @@ function Popup() {
             chrome.tabs.create({ url: 'https://github.com/m-rithik/VTOP-UI-Revamp' });
           },
           onMouseEnter: (e) => {
-            e.target.style.backgroundColor = '#f1f3f4';
-            e.target.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.backgroundColor = '#f1f3f4';
+            e.currentTarget.style.transform = 'translateY(-1px)';
           },
           onMouseLeave: (e) => {
-            e.target.style.backgroundColor = '#f8f9fa';
-            e.target.style.transform = 'translateY(0)';
+            e.currentTarget.style.backgroundColor = '#f8f9fa';
+            e.currentTarget.style.transform = 'translateY(0)';
           }
         },
           React.createElement('svg', { 
@@ -162,4 +162,4 @@ function Popup() {
 ReactDOM.render(
   React.createElement(Popup),
   document.getElementById('root')
-); 
+);
