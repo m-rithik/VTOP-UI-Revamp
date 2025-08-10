@@ -94,15 +94,6 @@ function Popup() {
           disabled: !settings.extensionEnabled
         })
       ),
-      React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
-        React.createElement('label', { style: { flex: 1, textTransform: 'capitalize', color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Course Page'),
-        React.createElement('input', {
-          type: 'checkbox',
-          checked: settings.courseSort,
-          onChange: () => handleToggle('courseSort'),
-          disabled: !settings.extensionEnabled
-        })
-      ),
       React.createElement('div', { style: { margin: '12px 0 0 0', fontWeight: 'bold' } }, 'Tools'),
       React.createElement('div', { style: { display: 'flex', alignItems: 'center', margin: '8px 0' } },
         React.createElement('label', { style: { flex: 1, color: settings.extensionEnabled ? undefined : '#aaa' } }, 'Enable PDF View Only & Dark Mode'),

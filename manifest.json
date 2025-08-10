@@ -10,9 +10,8 @@
       ],
       "js": [
         "src/content.js",
-        "src/pdf-autoopen.js",
-        "src/coursepage.js"
-      ]
+        "src/pdf-autoopen.js"
+            ]
     }
   ],
   "background": {

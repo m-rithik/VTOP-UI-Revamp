@@ -1,6 +1,13 @@
 
+
+
+//removed cuz they fixed it  
+
+
+
 // Course page functionality for VTOP Enhance
 // Organizes the "Select Registered Course" dropdown by semester
+
 
 (function() {
     'use strict';
