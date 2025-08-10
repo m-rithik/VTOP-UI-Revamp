@@ -164,6 +164,16 @@
       background: #b3baf7;
       border-radius: calc(8px * var(--ui-scale, 1));
     }
+    /* Hide scrollbars while a dropdown is open (keeps content scrollable) */
+    .vtop-dock-dropdown.open {
+      -ms-overflow-style: none; /* IE 10+ */
+      scrollbar-width: none;    /* Firefox */
+    }
+    .vtop-dock-dropdown.open::-webkit-scrollbar {
+      width: 0;                 /* Chrome/Safari/Edge */
+      height: 0;
+      background: transparent;
+    }
     #vtop-dock-hover-area {
       position: fixed;
       left: 0;
