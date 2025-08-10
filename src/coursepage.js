@@ -243,6 +243,29 @@
         } catch (_) {}
     }
 
+    function setPageLengthAll(table) {
+        try {
+            // If jQuery DataTables API is available and already initialized, use it
+            const jq = window.jQuery || window.$;
+            if (jq && jq.fn && jq.fn.dataTable) {
+                if (jq.fn.dataTable.isDataTable(table)) {
+                    const api = jq(table).DataTable();
+                    if (api && api.page && typeof api.page.len === 'function') {
+                        api.page.len(-1).draw(false); // -1 => show all rows
+                        return;
+                    }
+                }
+            }
+            // Fallback: try changing the length dropdown to "All" (-1)
+            const wrapper = table.closest('.dataTables_wrapper') || table.closest('.card-body') || document;
+            const lengthSelect = wrapper && wrapper.querySelector('.dataTables_length select');
+            if (lengthSelect && lengthSelect.value !== '-1') {
+                lengthSelect.value = '-1';
+                lengthSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        } catch (_) {}
+    }
+
     function setFacultyUiVisibility(visible) {
         try {
             const ui = document.getElementById('facultyFilterUI');
@@ -305,6 +328,7 @@
                 // Export buttons always hidden; hide Search permanently
                 setDtButtonsVisibility(table, false);
                 setSearchVisibility(table, false);
+                setPageLengthAll(table);
 
                 if (!enabled) {
                     // When disabled, hide our Faculty UI and stop here
@@ -345,6 +369,7 @@
                         // Keep export buttons hidden and keep Search hidden as well
                         setDtButtonsVisibility(table, false);
                         setSearchVisibility(table, false);
+                        setPageLengthAll(table);
                     });
                     if (table.tBodies && table.tBodies[0]) {
                         mo.observe(table.tBodies[0], { childList: true });
