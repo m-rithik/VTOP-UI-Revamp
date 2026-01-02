@@ -36,3 +36,4 @@
  - [Dark Mode ](https://github.com/darkreader/darkreader)
  - [VTOP PDF View](https://github.com/theg1239/VTOP-AutoOpen)
  - [For JS](https://chat.com)
+ - AI only
